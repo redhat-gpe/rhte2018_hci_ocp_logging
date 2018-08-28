@@ -223,7 +223,7 @@ sudo -i
 [source,bash]
 ----
 cd /root/
-git clone https://github.com/openshift/openshift-ansible
+git clone https://github.com/t0ffel/openshift-ansible
 ----
 * Edit the inventory file:
 [source,bash]
@@ -492,6 +492,7 @@ user3 was given cluster-admin privileges previously.
 +
 
 === Create Saved Searches
+
 . In the `Discovery` tab of Kibana switch to `projects.*` index pattern
 . Then add columns for:
 .. `kubernetes.namespace_name`
@@ -510,6 +511,7 @@ user3 was given cluster-admin privileges previously.
 
 === Create Visualizations
 Fist visualization we're going to create is the pie chart visualization of Namespace by volume of logs.
+
 . Click Visualizations tab
 .. Click `+`
 .. Choose `Pie`
@@ -523,6 +525,7 @@ Fist visualization we're going to create is the pie chart visualization of Names
 .. Click `Save`
 
 Next visualization we're going to create is a histogram for ops logs/hosts.
+
 . Click Visualizations tab
 .. Click `+`
 .. Choose `Vertical Bar`
@@ -546,6 +549,7 @@ TODO:  - append pie chart for namespaces with pod names
 
 === Create Dashboard
 We will create a dashboard that will display all the visualizations and saved searches created on previous steps.
+
 . Click Dashboard tab
 .. Click `+`
 .. Click `add`
@@ -558,7 +562,29 @@ We will create a dashboard that will display all the visualizations and saved se
 
 == Eventrouter & Timelion
 
-- add lines to inventory, relaunch the deployment
+* SSH to the bastion host.
+* Become root on the bastion host
+[source,bash]
+----
+sudo -i
+----
+* Edit the inventory file:
+[source,bash]
+----
+vim /etc/ansible/hosts
+----
+* Add the following lines to the inventory file in `[OSEv3:vars]` section right after `Enable cluster logging`.
+[source,bash]
+----
+openshift_logging_install_eventrouter=True
+openshift_logging_eventrouter_image="openshift/origin-logging-eventrouter"
+----
+This directs the installer to use OKD images of logging components from v3.11 and allow external route to Elasticsearch cluster.
+
+Enable cluster logging section should look as follows:
+[source,bash]
+----
+
 
 - show Kubernetes events in the Kibana
 - timelion to show correlation between kubernetes events and logs
