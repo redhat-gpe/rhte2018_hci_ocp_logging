@@ -482,6 +482,7 @@ Events:
   Normal  Started    2m    kubelet, infranode1.4b43.internal  Started container
 ----
 
+
 == Create Kibana Dashboards
 
 . In your web browser open {kibana} in a new incognito window
@@ -489,7 +490,7 @@ Events:
 +
 [NOTE]
 user3 was given cluster-admin privileges previously.
-+
+
 
 === Create Saved Searches
 
@@ -562,6 +563,10 @@ We will create a dashboard that will display all the visualizations and saved se
 
 == Eventrouter & Timelion
 
+=== Deploy Eventrouter component
+
+Eventrouter is the component of Logging stack that allows collecting Kubernetes events.
+
 * SSH to the bastion host.
 * Become root on the bastion host
 [source,bash]
@@ -579,21 +584,97 @@ vim /etc/ansible/hosts
 openshift_logging_install_eventrouter=True
 openshift_logging_eventrouter_image="openshift/origin-logging-eventrouter"
 ----
-This directs the installer to use OKD images of logging components from v3.11 and allow external route to Elasticsearch cluster.
+This directs the installer to add OKD's eventrouter logging component from v3.11.
 
 Enable cluster logging section should look as follows:
 [source,bash]
 ----
+TODO
+----
+
+* Make sure you're in the `/root/openshift-ansible` directory:
+[source, bash]
+----
+cd /root/openshift-ansible
+----
+* Execute ansible-playbook to deploy the Eventrouter component:
+[source,bash]
+----
+ansible-playbook -vvv --become --become-user root \
+  --inventory /etc/ansible/hosts \
+  -e deployment_type=origin \
+  -e openshift_image_tag=v3.11 \
+  -e openshift_pkg_version="-3.11*" \
+  playbooks/openshift-logging/config.yml
+----
+
+[Note]
+Execution of the playbook may take few minutes.
+
+This instructs the installer to deploy Eventrouter component from OKD v3.11
+
+Ansible playbook should finish running without any errors.
+
+.Sample Output
+[source,text]
+----
+PLAY RECAP *************************************************************************************************************************************************************************
+infranode1.4b43.internal   : ok=2    changed=1    unreachable=0    failed=0
+localhost                  : ok=12   changed=0    unreachable=0    failed=0
+master1.4b43.internal      : ok=303  changed=58   unreachable=0    failed=0
+node1.4b43.internal        : ok=1    changed=0    unreachable=0    failed=0
+node2.4b43.internal        : ok=1    changed=0    unreachable=0    failed=0
+support1.4b43.internal     : ok=1    changed=0    unreachable=0    failed=0
 
 
-- show Kubernetes events in the Kibana
-- timelion to show correlation between kubernetes events and logs
+INSTALLER STATUS *******************************************************************************************************************************************************************
+Initialization   : Complete (0:00:10)
+Logging Install  : Complete (0:02:58)
+----
+
+Validate that the Eventrouter component was deployed successfully:
+
+. Navigate to `default` namespace and check the running pods
+[source,bash]
+----
+oc project default
+oc get po
+----
+
+[NOTE]
+Eventrouter is deployed to `default` namespace, not to `openshift-logging` namespace.
+
+.Sample Output
+[source, text]
+----
+[root@bastion openshift-ansible]# oc project default
+Now using project "default" on server "https://master.4b43.openshift.opentlc.com:443".
+[root@bastion openshift-ansible]# oc get po
+TODO
+[root@bastion openshift-ansible]#
+----
+Age of the Eventrouter pod should be new - it was just spun up by the installer.
+
+It should be using image `openshift/origin-logging-eventrouter`. You can check it for example if you do `oc describe pod <POD NAME>`
+
+=== View Kuberentes events in Kibana
+
+
+=== Correlate events via Timelion
+
+In this section you will learn how to use Timelion feature of Kibana. This is a new Kibana application added in Kibana 5.x (included in OpenShift v3.11).
+
 - Delete image stream and validate that it is reflected in the Dashboard
 
 == Forwarding logs to different cluster
 
-- certificate
-- change fluentd config
+=== Get the certificate from destination cluster
+
+TODO
+
+=== Change fluentd config on the source cluster
+
+TODO
 
 == Cleanup
 
