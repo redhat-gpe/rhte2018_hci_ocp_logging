@@ -48,7 +48,7 @@ If it does not you can download the correct version of the OpenShift Command Lin
 Then verify again that the version displayed is corect.
 
 
-=== These are your lab end points 
+=== These are your lab end points
 
 
 cluster_base: {cluster_base}
@@ -63,7 +63,6 @@ Where REPL = Lab Attendees GUID
 
 === Connect to the OpenShift Cluster via oc
 
-oc 
 
 Make sure you can log in to the OpenShift cluster.
 
@@ -97,8 +96,11 @@ Make sure you can log in to the OpenShift cluster as user2.
 [NOTE]
 The cluster URL is https://{cluster_master}.
 
+[NOTE]
+We recommend that you use "incognito" or "private browsing" mode of your browser, since we will use several users and we don't want to mix up the cookies.
+
 . Use your web browser to log in to the cluster https://{cluster_master}.
-. At the login prompt use username `user2` and password `r3dh4t1!`
+. At the login prompt use username `user1` and password `r3dh4t1!`
 
 === Connect to the bastion host via ssh
 
@@ -128,23 +130,23 @@ You should see
 system:admin
 ----
 
-OpenShift cluster has pre-created users. We will be using `user1`, `user2` and `user3`
-Add `cluster-admin` privileges to the `user3`:
+OpenShift cluster has pre-created users. We will be using `user1` and `user2`
+Add `cluster-admin` privileges to the `user2`:
 [source,bash]
 ----
-oc adm policy add-cluster-role-to-user cluster-admin user3
+oc adm policy add-cluster-role-to-user cluster-admin user2
 ----
 You should see
 
 .Output
 [source,text]
 ----
-cluster role "cluster-admin" added: "user3"
+cluster role "cluster-admin" added: "user2"
 ----
 
 == Create applications in the OpenShift Cluster
 
-In this section you are creating 2 applications in the cluster under 2 different users. These applications will run in separate namespaces and produce various logs. In the real world this might be end-user's applications.
+In this section you are creating an applications in the cluster. The application will run in user's namespaces and produce various logs. In the real world this might be end-user's application.
 
 === Create application as user1 via command line
 
@@ -165,20 +167,6 @@ oc new-project lab1 --display-name "First Log producer"
 . You will be building a (very) simple python application.
 
 
-=== Create application as user2 via Web Console
-
-. Open your web browser and log into the OpenShift Web Console under user2 (use https://{cluster_master} ).
-. Click `Create Project` to create new project for the sample application
-+
-Use the Name `lab2` and Display Name `Second Sample application`
-+
-. After the project is created click on `Second Sample application` in the list of `My Projects` to select it
-+
-The project is empty at the moment. OpenShift comes with a pre-configured PHP/MySQL pod to use. We'll use it as an example to produce some logs.
-+
-. Open `Browse Catalog` and select `CakePHP + MySQL (ephemeral)`
-+
-Click `next` on the 1st page of application deployment wizard `Information` page, click `create` on the 2nd `Configuration` page(we don't need to change any configuration).
 
 === Check that the application logs are flowing in
 
@@ -190,6 +178,7 @@ In order to view application logs you will need to log in to Kibana as a regular
 [NOTE]
 If you already logged in as a different user you may want to use another browser or incognito browsing window.
 +
+. Open `Settings` -> `About`. Kibana version should be: `4.6.4`
 . In the `Discovery` tab of Kibana add columns for:
 .. `kubernetes.namespace_name`
 .. `kubernetes.pod_name`
@@ -197,7 +186,7 @@ If you already logged in as a different user you may want to use another browser
 . Verify that logs from the application deployed as `user1` can be seen and no logs from namespace created as `user2` can be seen
 
 Validated at this point:
-Regular user can only see logs from his own application.
+Regular user can only see logs from his/her own application.
 
 === Check that the system logs are flowing in
 
@@ -205,12 +194,12 @@ In order to view system logs you should log in to Kibana as a user with cluster-
 
 . Close the old incognito browsing window, so that old cookies don't interfere with the new login.
 . In your web browser open {kibana} in a new incognito window
-. When prompted to log in use username `user3` and password `r3dh4t1!`
+. When prompted to log in use username `user2` and password `r3dh4t1!`
 +
 [NOTE]
-user3 was given cluster-admin privileges previously.
+user2 was given cluster-admin privileges previously.
 +
-. In the `Discovery` tab of Kibana switch to `projects.*` index pattern
+. In the `Discovery` tab of Kibana switch to `project.*` index pattern
 . Then add columns for:
 .. `kubernetes.namespace_name`
 .. `kubernetes.pod_name`
@@ -290,7 +279,7 @@ openshift_logging_curator_default_days=3
 * Make sure you're in the `/root/openshift-ansible` directory:
 [source, bash]
 ----
-pwd
+cd /root/openshift-ansible
 ----
 * Execute ansible-playbook to upgrade the logging bits:
 [source,bash]
@@ -500,15 +489,17 @@ Events:
 == Create Kibana Dashboards
 
 . In your web browser open {kibana} in a new incognito window
-. When prompted to log in use username `user3` and password `r3dh4t1!`
+. When prompted to log in use username `user2` and password `r3dh4t1!`
 +
 [NOTE]
-user3 was given cluster-admin privileges previously.
+user2 was given cluster-admin privileges previously.
++
+. Open `Management` tab. It should say that the Kibana version is `Version: 5.6.10`
 
 
 === Create Saved Searches
 
-. In the `Discovery` tab of Kibana switch to `projects.*` index pattern
+. In the `Discovery` tab of Kibana switch to `project.*` index pattern
 . Then add columns for:
 .. `kubernetes.namespace_name`
 .. `kubernetes.pod_name`
@@ -520,6 +511,10 @@ user3 was given cluster-admin privileges previously.
 .. `systemd.t.COMM`
 .. `message`
 . Click `Save`
++
+[NOTE]
+The `Save` button is in right upper corner of Kibana Web UI
++
 .. Enter name `ops logs`
 .. Check checkbox 'Save as a new search'
 .. Click `Save`
@@ -527,13 +522,17 @@ user3 was given cluster-admin privileges previously.
 === Create Visualizations
 Fist visualization we're going to create is the pie chart visualization of Namespace by volume of logs.
 
-. Click Visualizations tab
+. Click Visualize tab
 .. Click `+`
 .. Choose `Pie`
 .. In `From a New Search, Select Index` select `project.*`
 .. Under `buckets` -> `Select buckets type` choose `Split slices`
 .. Under `Aggregation` select `Term` in drop-down box
 .. Under `Field` scroll down and select `kubernetes.namespace_name`
++
+[NOTE]
+Once you place the cursor under `Field` you can start typing to find the field name.
++
 .. Hit 'run' triangle button to see the preview
 .. Click `Save`
 .. Enter name `namespaces by log volume`
@@ -541,7 +540,7 @@ Fist visualization we're going to create is the pie chart visualization of Names
 
 Next visualization we're going to create is a histogram for ops logs/hosts.
 
-. Click Visualizations tab
+. Click Visualize tab
 .. Click `+`
 .. Choose `Vertical Bar`
 .. In `Or, From a Saved Search` select `ops logs`
@@ -554,13 +553,27 @@ We're re-using `ops logs` saved search which we created on an earlier step.
 .. hit 'run' button to preview the histogram
 .. Click `Add sub-buckets` below `buckets`->`X-Axis`
 .. Under `Select buckets type` choose `Split series`
-.. In `Sub Aggregation` drop-down select `Term`
+.. In `Sub Aggregation` drop-down select `Terms`
 .. In `Field` choose `hostname`
+.. hit 'run' button to preview the histogram
 .. Click `Save`
 .. Enter name `ops logs histogram by hostname`
 .. Click `Save`
 
-TODO:  - append pie chart for namespaces with pod names
+Next visualization we will append the `namespaces by log volume` Pie chart to include pod names.
+
+. Click Visualize tab
+. Click `namespace by log volume` visualization to open it for editing
+. Under `buckets` click `Add sub-bucket`
+. In `Select bucket type` choose `Split Slices`
+. In `Sub Aggregation` drop-down select `Terms`
+. In `Field` choose `kubenetes.pod_name`
+. hit 'run' button to preview the visualization
+. Check that visualization displays logs volume by pod name and by namespace
+. Click `Save`
+. Use the same name (`namespaces by log volume`)
+. Click `Save`
+
 
 === Create Dashboard
 We will create a dashboard that will display all the visualizations and saved searches created on previous steps.
@@ -568,8 +581,8 @@ We will create a dashboard that will display all the visualizations and saved se
 . Click Dashboard tab
 .. Click `+`
 .. Click `add`
-.. Add all visualizations from `Visualization` tab
-.. Add all saved searches from `Search tab`
+.. On the `Visualization` tab select the two visualizations you created previously
+.. On the `Search` tab select the two saved searches you saved previously
 .. Drag and resize visualizations and searches so that they fit the screen nicely.
 .. Click `Save`
 .. Enter name `Main dashboard`
@@ -603,7 +616,36 @@ This directs the installer to add OKD's eventrouter logging component from v3.11
 Enable cluster logging section should look as follows:
 [source,bash]
 ----
-TODO
+# Enable cluster logging
+########################
+openshift_logging_install_eventrouter=True
+openshift_logging_eventrouter_image="openshift/origin-logging-eventrouter"
+
+openshift_logging_image_prefix="openshift/origin-"
+openshift_logging_elasticsearch_image="openshift/origin-logging-elasticsearch5"
+openshift_logging_kibana_image="openshift/origin-logging-kibana5"
+openshift_logging_fluentd_image="openshift/origin-logging-fluentd"
+openshift_logging_es_allow_external=True
+openshift_logging_elasticsearch_proxy_image=openshift/oauth-proxy:v1.1.0
+openshift_logging_kibana_proxy_image=openshift/oauth-proxy:v1.1.0
+
+openshift_logging_install_logging=True
+
+openshift_logging_storage_kind=nfs
+openshift_logging_storage_access_modes=['ReadWriteOnce']
+openshift_logging_storage_nfs_directory=/srv/nfs
+openshift_logging_storage_nfs_options='*(rw,root_squash)'
+openshift_logging_storage_volume_name=logging
+openshift_logging_storage_volume_size=10Gi
+openshift_logging_storage_labels={'storage': 'logging'}
+openshift_logging_es_pvc_storage_class_name=''
+
+openshift_logging_kibana_nodeselector={"node-role.kubernetes.io/infra": "true"}
+openshift_logging_curator_nodeselector={"node-role.kubernetes.io/infra": "true"}
+openshift_logging_es_nodeselector={"node-role.kubernetes.io/infra": "true"}
+
+openshift_logging_es_cluster_size=1
+openshift_logging_curator_default_days=3
 ----
 
 * Make sure you're in the `/root/openshift-ansible` directory:
@@ -664,7 +706,11 @@ Eventrouter is deployed to `default` namespace, not to `openshift-logging` names
 [root@bastion openshift-ansible]# oc project default
 Now using project "default" on server "https://master.4b43.openshift.opentlc.com:443".
 [root@bastion openshift-ansible]# oc get po
-TODO
+NAME                          READY     STATUS    RESTARTS   AGE
+docker-registry-1-tb69x       1/1       Running   2          17h
+logging-eventrouter-1-b9qh2   1/1       Running   0          10m
+registry-console-1-hp8x5      1/1       Running   1          17h
+router-2-t2f27                1/1       Running   1          17h
 [root@bastion openshift-ansible]#
 ----
 Age of the Eventrouter pod should be new - it was just spun up by the installer.
@@ -673,12 +719,112 @@ It should be using image `openshift/origin-logging-eventrouter`. You can check i
 
 === View Kuberentes events in Kibana
 
+In this section you will learn how to search for Kubernetes events in Kibana.
+
+. In your web browser open {kibana} in a new incognito window
+. When prompted to log in use username `user2` and password `r3dh4t1!`
+. In the `Discovery` tab of Kibana switch to `.operations.*` index pattern
++
+[NOTE]
+You can switch to a different index by selecting it in left upper corner
++
+. Remove all existing columns and add columns for:
+.. `kubernetes.event.type`
++
+[NOTE]
+This field shows the type of the event: either `Normal` or `Warning`
++
+.. `kubernetes.event.involvedObject.namespace`
++
+[NOTE]
+This field shows the namespace where the event occurred
++
+.. `kubernetes.event.reason`
++
+[NOTE]
+This field shows the brief machine-readable reason for the event
++
+.. `message`
++
+[NOTE]
+This field shows the human-readable event message
++
+. In the `Search` bar type the following in order to filter only the messages that contain field `kuberenetes.event`
++
+[source, text]
+----
+_exists_:kubernetes.event
+----
+. Click `Save`
+.. Enter name `Kubernetes Events`
+.. Check checkbox 'Save as a new search'
+.. Click `Save`
+
 
 === Correlate events via Timelion
 
 In this section you will learn how to use Timelion feature of Kibana. This is a new Kibana application added in Kibana 5.x (included in OpenShift v3.11).
 
-- Delete image stream and validate that it is reflected in the Dashboard
+. Switch to `Timelion` tab of Kibana
+. In the query bar search of all logs from project `lab1` where the application runs:
+[source,text]
++
+----
+.es(index='project.lab1*')
+----
++
+. You should see chart of log volume from the project `lab1`
+. In the query bar search of all events on the cluster:
+[source,text]
++
+----
+.es(index='.operations*', q='_exists_:kubernetes.event')
+----
+. You should see chart of Kubernetes events volume from the cluster
+. Combine both queries together in the query bar:
+[source,text]
++
+----
+.es(index='project.lab1*'), .es(index='.operations*', q='_exists_:kubernetes.event')
+----
++
+. Click `Save`
+.. Choose `Save current expression as Kibana dashboard panel`
+.. Enter the name `Correlated events and logs`
+.. Click `Save`
+
+=== Create Dashboard for event and log correlation
+
+We will create a dashboard that will display the Timelion visualization and saved searches created on previous steps.
+
+. Click Dashboard tab
+.. Click `+`
+.. Click `add`
+.. On the `Visualization` tab select the `Correlated events and logs` visualization you created in Timelion
+.. On the `Search` tab select `Kubernetes Events` and `pod logs` saved searches you saved previously
+.. Drag and resize visualizations and searches so that they fit the screen nicely.
+.. Click `Save`
+.. Enter name `Event Correlation`
+.. Click `Save`
+
+Now you have the dashboards that correlates Kubernetes Events and logs from various pods.
+
+[NOTE]
+It is necessary to use `Timelion` for correlation, because Kubernetes Events reside in `.operations*` index pattern, while application logs belong to one of `project.*` indices. Regular Kibana widgets can only work on the same index pattern.
+
+=== Delete image stream and validate that it is reflected in the Dashboard
+
+In this section you will trigger Kubernetes events and make sure they are visible in the dashboard.
+
+. In the `Event Correlation` dashboard type the following query to limit display only to events related to `lab1` namespace or to logs produced in `lab1` namespace.
++
+[source, text]
+----
+kubernetes.event.involvedObject.namespace:lab1 OR kubernetes.namespace_name:lab1
+----
++
+. Delete ImageStream TODO
+. Check that events are properly reflected.
 
 == Forwarding logs to different cluster
 
