@@ -1,7 +1,7 @@
 :opencf: link:https://labs.opentlc.com/[OPENTLC lab portal^]
 :account_management: link:https://www.opentlc.com/account/[OPENTLC Account Management page^]
 :quay_hostname: quay.rhte.example.opentlc.com
-:cluster_base: rhte-cloud1.example.opentlc.com
+:cluster_base: REPL.rhte.opentlc.com
 :cluster_master: master.{cluster_base}
 :bastion: bastion.{cluster_base}
 :kibana: https://kibana.apps.{cluster_base}
@@ -48,8 +48,22 @@ If it does not you can download the correct version of the OpenShift Command Lin
 Then verify again that the version displayed is corect.
 
 
+=== These are your lab end points 
+
+
+cluster_base: {cluster_base}
+
+cluster_master: {master_base}
+
+bastion: {bastion}
+
+kibana: {kibana}
+
+Where REPL = Lab Attendees GUID
 
 === Connect to the OpenShift Cluster via oc
+
+oc 
 
 Make sure you can log in to the OpenShift cluster.
 
