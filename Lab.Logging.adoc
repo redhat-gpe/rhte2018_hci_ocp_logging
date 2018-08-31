@@ -51,13 +51,13 @@ Then verify again that the version displayed is corect.
 === These are your lab end points
 
 
-cluster_base: {cluster_base}
+cluster base(all hosts are subdomains of the cluster_base): {cluster_base}
 
-cluster_master: {master_base}
+cluster master URL: {cluster_master}
 
-bastion: {bastion}
+bastion host: {bastion}
 
-kibana: {kibana}
+kibana URL: {kibana}
 
 Where REPL = Lab Attendees GUID
 
@@ -73,7 +73,7 @@ The cluster URL is https://{cluster_master}.
 +
 [source,text]
 ----
-oc login -u user1 -p r3dh4t1! <CLUSTER_URL>
+oc login -u lab-user -p r3dh4t1! <CLUSTER_URL>
 ----
 +
 [NOTE]
@@ -179,38 +179,18 @@ In order to view application logs you will need to log in to Kibana as a regular
 If you already logged in as a different user you may want to use another browser or incognito browsing window.
 +
 . Open `Settings` -> `About`. Kibana version should be: `4.6.4`
-. In the `Discovery` tab of Kibana add columns for:
+. In the `Discover` tab of Kibana add columns for:
 .. `kubernetes.namespace_name`
 .. `kubernetes.pod_name`
 .. `message`
++
+[NOTE]
+The field names are listed on the left-hand menu. When you hover over a specific field you'll get an option to `add` it as a column.
++
 . Verify that logs from the application deployed as `user1` can be seen and no logs from namespace created as `user2` can be seen
 
 Validated at this point:
 Regular user can only see logs from his/her own application.
-
-=== Check that the system logs are flowing in
-
-In order to view system logs you should log in to Kibana as a user with cluster-admin privileges:
-
-. Close the old incognito browsing window, so that old cookies don't interfere with the new login.
-. In your web browser open {kibana} in a new incognito window
-. When prompted to log in use username `user2` and password `r3dh4t1!`
-+
-[NOTE]
-user2 was given cluster-admin privileges previously.
-+
-. In the `Discovery` tab of Kibana switch to `project.*` index pattern
-. Then add columns for:
-.. `kubernetes.namespace_name`
-.. `kubernetes.pod_name`
-.. `message`
-. Verify that logs from the application deployed as `user1` can be seen as well as logs from namespace created as `user2`
-. In the `Discovery` tab of Kibana switch to `.operations.*` index pattern
-. Verify that system logs from hosts can be seen
-
-Validated at this point:
-Cluster admins can see logs from all namespaces
-Cluster admins can see logs from hosts and administrative namespaces
 
 == Upgrade the Logging setup
 
@@ -499,13 +479,13 @@ user2 was given cluster-admin privileges previously.
 
 === Create Saved Searches
 
-. In the `Discovery` tab of Kibana switch to `project.*` index pattern
+. In the `Discover` tab of Kibana switch to `project.*` index pattern
 . Then add columns for:
 .. `kubernetes.namespace_name`
 .. `kubernetes.pod_name`
 .. `message`
 . Click `Save` and save the search under name `pod logs`
-. In the `Discovery` tab of Kibana switch to `.operations.*` index pattern
+. In the `Discover` tab of Kibana switch to `.operations.*` index pattern
 . Remove all existing columns and add columns for:
 .. `hostname`
 .. `systemd.t.COMM`
@@ -723,7 +703,7 @@ In this section you will learn how to search for Kubernetes events in Kibana.
 
 . In your web browser open {kibana} in a new incognito window
 . When prompted to log in use username `user2` and password `r3dh4t1!`
-. In the `Discovery` tab of Kibana switch to `.operations.*` index pattern
+. In the `Discover` tab of Kibana switch to `.operations.*` index pattern
 +
 [NOTE]
 You can switch to a different index by selecting it in left upper corner
