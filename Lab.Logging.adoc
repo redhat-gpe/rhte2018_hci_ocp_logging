@@ -104,10 +104,10 @@ We recommend that you use "incognito" or "private browsing" mode of your browser
 
 === Connect to the bastion host via ssh
 
-Connect to the {bastion} host via SSH using the private key for OpenTLC:
+Connect to the {bastion} host via SSH using the password `r3dh4t1!`:
 [source,bash]
 ----
-ssh -i <Your OPENTLC private key> <Your OPENTLC UserID>@<BASTION_HOST>
+ssh lab-user@bastion.REPL.rhte.opentlc.com
 ----
 
 Once you're on the bastion host, become root:
