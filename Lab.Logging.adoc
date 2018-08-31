@@ -91,7 +91,7 @@ You don't have any projects. You can try to create a new project, by running
 
 === Connect to the OpenShift Web Console
 
-Make sure you can log in to the OpenShift cluster as user2.
+Make sure you can log in to the OpenShift cluster as user1.
 
 [NOTE]
 The cluster URL is https://{cluster_master}.
