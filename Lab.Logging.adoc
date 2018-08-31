@@ -347,7 +347,7 @@ It should be using image `openshift/origin-logging-elasticsearch5`. You can chec
 .Sample Output
 [source, text]
 ----
-[root@bastion openshift-ansible]# oc describe po logging-es-data-master-7m1ej4aj-6-kppvt
+[root@bastion openshift-ansible]# oc describe pod -l component=es
 Name:           logging-es-data-master-7m1ej4aj-6-kppvt
 Namespace:      openshift-logging
 Node:           infranode1.4b43.internal/192.199.0.91
