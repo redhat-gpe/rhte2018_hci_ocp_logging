@@ -179,7 +179,7 @@ In order to view application logs you will need to log in to Kibana as a regular
 If you already logged in as a different user you may want to use another browser or incognito browsing window.
 +
 . Open `Settings` -> `About`. Kibana version should be: `4.6.4`
-. In the `Discovery` tab of Kibana add columns for:
+. In the `Discover` tab of Kibana add columns for:
 .. `kubernetes.namespace_name`
 .. `kubernetes.pod_name`
 .. `message`
