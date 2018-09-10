@@ -11,7 +11,7 @@
 :oc_download_location: https://mirror.openshift.com/pub/openshift-v3/clients/{oc_version}
 
 = Logging OpenShift Lab
-
+:toc:
 == Lab Overview
 
 Welcome to the RHTE Logging for Hybrid Cloud lab. This lab is based on the Aggregated Logging feature available on OpenShift Container Platform (OCP). This Aggregated Logging is based on the popular Elasticsearch, Fluentd, Kibana (EFK) stack.
