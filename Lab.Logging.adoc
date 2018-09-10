@@ -320,7 +320,7 @@ ansible-playbook -vvv --become --become-user root \
   playbooks/openshift-logging/config.yml
 ----
 
-[Note]
+[NOTE]
 Execution of the playbook may take few minutes.
 
 This instructs the installer to deploy logging bits from v3.11
@@ -707,7 +707,7 @@ ansible-playbook -vvv --become --become-user root \
   playbooks/openshift-logging/config.yml
 ----
 
-[Note]
+[NOTE]
 Execution of the playbook may take few minutes.
 
 This instructs the installer to deploy Eventrouter component from OKD v3.11
@@ -902,14 +902,17 @@ oc delete imagestream logging-app
 +
 .. Now will emulate a failure and delete the running pod:
 ... Get the list of pods
++
 [source,bash]
 ----
-$ oc get po
+$ oc get pod
 NAME                   READY     STATUS             RESTARTS   AGE
 logging-app-1-build    0/1       Completed          0          1h
 logging-app-1-v94cc    1/1       Running            0          1h
 ----
++
 ... Delete the pod that is in the `Running` status
++
 [source,bash]
 ----
 $ oc delete po logging-app-1-v94cc
@@ -934,4 +937,4 @@ You should get `ErrImagePull` error on the attempt to redeploy the pod.
 .. The Timelion graph should display that the logs were stopped being produced in the namespace around the same time as some events occurred.
 .. Zoom into the Timelion section and examine the events/logs more closely.
 
-image::images/Pincode.svg
+image::images/Pincode.png[]
