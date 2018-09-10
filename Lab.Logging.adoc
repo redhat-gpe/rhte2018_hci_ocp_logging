@@ -850,6 +850,7 @@ In this section you will learn how to use Timelion feature of Kibana. This is a 
 We will create a dashboard that will display the Timelion visualization and saved searches created on previous steps.
 
 . Click Dashboard tab
+. In case you see an existing dashboard click `Dashboard` hyperlink in left upper corner to get to new dashboard creation interface.
 .. Click `+`
 .. Click `add`
 .. On the `Visualization` tab select the `Correlated events and logs` visualization you created in Timelion
