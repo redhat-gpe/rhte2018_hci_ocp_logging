@@ -582,15 +582,15 @@ We're re-using `ops logs` saved search which we created on an earlier step.
 .. Under `buckets` -> `Select buckets type` choose `X-Axis`
 .. Under `Aggregation` select `Date Histogram` in drop-down box
 .. hit 'run' button to preview the histogram
++
+[NOTE]
+`run` button is the triangle in the left upper corner.
++
 .. Click `Add sub-buckets` below `buckets`->`X-Axis`
 .. Under `Select buckets type` choose `Split series`
 .. In `Sub Aggregation` drop-down select `Terms`
 .. In `Field` choose `hostname`
 .. hit 'run' button to preview the histogram
-+
-[NOTE]
-`run` button is the triangle in the left upper corner.
-+
 .. Click `Save`
 .. Enter name `ops logs histogram by hostname`
 .. Click `Save`
@@ -752,7 +752,7 @@ Age of the Eventrouter pod should be new - it was just spun up by the installer.
 
 It should be using image `openshift/origin-logging-eventrouter`. You can check it for example if you do `oc describe pod <POD NAME>`
 
-=== View Kuberentes events in Kibana
+=== View Kubernetes events in Kibana
 
 In this section you will learn how to search for Kubernetes events in Kibana.
 
@@ -785,6 +785,12 @@ This field shows the brief machine-readable reason for the event
 This field shows the human-readable event message
 +
 . In the `Search` bar type the following in order to filter only the messages that contain field `kuberenetes.event`
++
+[NOTE]
+What happens here is the Kubernetes events get collected in the namespace `default`, which means they'll end up in the index pattern `.operations.*` and all Kubernetes events have field `kubernetes.event` which contains the actual structure of the event.
++
+[NOTE]
+Elasticsearch query keyword `_exists_` can be used to find only the records where certain field exists.
 +
 [source, text]
 ----
@@ -858,63 +864,61 @@ In this section you will trigger Kubernetes events and make sure they are visibl
 kubernetes.event.involvedObject.namespace:lab1 OR kubernetes.namespace_name:lab1
 ----
 +
-. Delete ImageStream TODO
-. Check that events are properly reflected.
-
-== Forwarding logs to different cluster
-
-=== Get the certificate from destination cluster
-
-TODO
-
-=== Change fluentd config on the source cluster
-
-TODO
-
-== Cleanup
-
-Now that you have finished this lab, please take a moment to clean up the environment for the next set of students.
-
-. Log into the OpenShift Cluster 1 (https://{cluster_master}).
+. Delete ImageStream `logging-app` in the namespace `lab1`
+.. Log in via `oc` as a lab-user:
++
+[source,text]
+----
+oc login -u lab-user -p r3dh4t1! <CLUSTER_URL>
+----
++
+[NOTE]
+The CLUSTER_URL is https://{cluster_master}.
++
+.. Go to the `lab1` project:
 +
 [source,bash]
 ----
-oc login -u <OpenTLC User Name> -p <OpenTLC Password> <CLUSTER_URL>
+oc project lab1
 ----
 +
-. Delete the Jenkins Project on Cluster 1
-+
-[source,bash]
-----
-oc delete project ${GUID}-jenkins
-----
-+
-. Delete the Development Project on Cluster 1
+.. Delete `logging-app` ImageStream
 +
 [source,bash]
 ----
-oc delete project ${GUID}-rhte-app-dev
+oc delete imagestream logging-app
 ----
 +
-. Delete the Production Project on Cluster 1
+.. Now will emulate a failure and delete the running pod:
+... Get the list of pods
+[source,bash]
+----
+$ oc get po
+NAME                   READY     STATUS             RESTARTS   AGE
+logging-app-1-build    0/1       Completed          0          1h
+logging-app-1-v94cc    1/1       Running            0          1h
+----
+... Delete the pod that is in the `Running` status
+[source,bash]
+----
+$ oc delete po logging-app-1-v94cc
+pod "logging-app-1-v94cc" deleted
+----
++
+. Validate that the deployment rollout fails
 +
 [source,bash]
 ----
-oc delete project ${GUID}-rhte-app
+$ oc get po
+NAME                   READY     STATUS         RESTARTS   AGE
+logging-app-1-build    0/1       Completed      0          1h
+logging-app-1-7kcwm    0/1       ErrImagePull   0          5s
 ----
 +
-. Log into the OpenShift Cluster 2 (https://{cluster2_master}).
+[NOTE]
+You should get `ErrImagePull` error on the attempt to redeploy the pod.
 +
-[source,bash]
-----
-oc login -u <OpenTLC User Name> -p <OpenTLC Password> <CLUSTER_URL>
-----
-+
-. Delete the Production Project on Cluster 2
-+
-[source,bash]
-----
-oc delete project ${GUID}-rhte-app
-----
-
-Congratulations! You finished this lab.
+. Check that events are properly reflected in Kibana.
+.. Open `Event Correlation` Dashboard in Kibana
+.. The Timelion graph should display that the logs were stopped being produced in the namespace around the same time as some events occurred.
+.. Zoom into the Timelion section and examine the events/logs more closely.
