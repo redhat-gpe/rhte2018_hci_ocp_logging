@@ -933,3 +933,5 @@ You should get `ErrImagePull` error on the attempt to redeploy the pod.
 .. Open `Event Correlation` Dashboard in Kibana
 .. The Timelion graph should display that the logs were stopped being produced in the namespace around the same time as some events occurred.
 .. Zoom into the Timelion section and examine the events/logs more closely.
+
+image::images/Pincode.svg
