@@ -157,26 +157,66 @@ In this section you are creating an applications in the cluster. The application
 oc login -u user1 -p r3dh4t1! <CLUSTER_URL>
 ----
 +
-. Create a project for Jenkins
+. Create a project for the application
 +
 [source,bash]
 ----
 oc new-project lab1 --display-name "First Log producer"
 ----
 +
-. You will be building a (very) simple python application.
-
-
+. You will be building and deploying a (very) simple python application which will output logs periodically.
++
+[source,bash]
+----
+oc process -f https://raw.githubusercontent.com/t0ffel/logging-app/master/logging-app-template.yaml | oc apply -f -
+----
++
+That will create ImageStream, BuildConfig and DeploymentConfig to build and deploy the application.
++
+.Sample Output
+[source,bash]
+----
+$ oc process -f https://raw.githubusercontent.com/t0ffel/logging-app/master/logging-app-template.yaml | oc apply -f -
+imagestream "logging-app" created
+buildconfig "logging-app" created
+deploymentconfig "logging-app" created
+----
++
+. Validate that build is running:
++
+[source,bash]
+----
+$ oc get po
+NAME                  READY     STATUS      RESTARTS   AGE
+logging-app-1-build   0/1       Running     0          15s
+----
++
+. After the build completes the created application image will be pushed into the internal registry and it will also be deployed in the same namespace.
++
+[source,bash]
+----
+$ oc get po
+NAME                  READY     STATUS      RESTARTS   AGE
+logging-app-1-build   0/1       Completed   0          7m
+logging-app-1-v94cc   1/1       Running     0          6m
+----
 
 === Check that the application logs are flowing in
 
 In order to view application logs you will need to log in to Kibana as a regular user.
 
 . In your web browser open {kibana} in a new incognito window
++
+[NOTE]
+Depending on a browser you may get 2 warnings about incorrect certificates. This is expected since we use self-signed certificates. 1st warning comes from the Kibana application and the 2nd warning may come from the Web console which Kibana uses for user login.
++
 . When prompted to log in use username `user1` and password `r3dh4t1!`
 +
 [NOTE]
 If you already logged in as a different user you may want to use another browser or incognito browsing window.
++
+[NOTE]
+In case Kibana doesn't display any index it is possible that no logs were produced yet. You may want to wait few minutes and check that there are pods running in user's namespace.
 +
 . Open `Settings` -> `About`. Kibana version should be: `4.6.4`
 . In the `Discover` tab of Kibana add columns for:
@@ -490,6 +530,10 @@ user2 was given cluster-admin privileges previously.
 .. `hostname`
 .. `systemd.t.COMM`
 .. `message`
++
+[NOTE]
+In order to remove columns you can hoover the cursor over the column name, and click "x"
++
 . Click `Save`
 +
 [NOTE]
@@ -497,6 +541,10 @@ The `Save` button is in right upper corner of Kibana Web UI
 +
 .. Enter name `ops logs`
 .. Check checkbox 'Save as a new search'
++
+[NOTE]
+If you don't select `Save as a new search` checkbox, you will overwrite the previously saved search.
++
 .. Click `Save`
 
 === Create Visualizations
@@ -507,11 +555,14 @@ Fist visualization we're going to create is the pie chart visualization of Names
 .. Choose `Pie`
 .. In `From a New Search, Select Index` select `project.*`
 .. Under `buckets` -> `Select buckets type` choose `Split slices`
-.. Under `Aggregation` select `Term` in drop-down box
+.. Under `Aggregation` select `Terms` in drop-down box
 .. Under `Field` scroll down and select `kubernetes.namespace_name`
 +
 [NOTE]
 Once you place the cursor under `Field` you can start typing to find the field name.
++
+[NOTE]
+By default visualization will display top 5 results, you can change that in the `size` field.
 +
 .. Hit 'run' triangle button to see the preview
 .. Click `Save`
@@ -536,6 +587,10 @@ We're re-using `ops logs` saved search which we created on an earlier step.
 .. In `Sub Aggregation` drop-down select `Terms`
 .. In `Field` choose `hostname`
 .. hit 'run' button to preview the histogram
++
+[NOTE]
+`run` button is the triangle in the left upper corner.
++
 .. Click `Save`
 .. Enter name `ops logs histogram by hostname`
 .. Click `Save`
