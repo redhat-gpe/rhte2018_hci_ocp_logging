@@ -104,45 +104,53 @@ We recommend that you use "incognito" or "private browsing" mode of your browser
 
 === Connect to the bastion host via ssh
 
-Connect to the {bastion} host via SSH using the password `r3dh4t1!`:
+In this section we will demonstrate how to become root on bastion host to be able to execute Ansible playbooks against the cluster.
+You will also add cluster-admin privileges to "user2".
+
+. Connect to the {bastion} host via SSH using the password `r3dh4t1!`:
++
 [source,bash]
 ----
 ssh lab-user@bastion.REPL.rhte.opentlc.com
 ----
-
-Once you're on the bastion host, become root:
++
+. Once you're on the bastion host, become root:
++
 [source,bash]
 ----
 sudo -i
 ----
-
-Check that you're `system:admin` on your OpenShift cluster:
++
+. Check that you're `system:admin` on your OpenShift cluster:
++
 [source,bash]
 ----
 oc whoami
 ----
-
++
 You should see
-
++
 .Output
 [source,text]
 ----
 system:admin
 ----
-
-OpenShift cluster has pre-created users. We will be using `user1` and `user2`
-Add `cluster-admin` privileges to the `user2`:
++
+. OpenShift cluster has pre-created users. We will be using `user1` and `user2`. Please execute the following command to add `cluster-admin` privileges to the `user2`:
++
 [source,bash]
 ----
 oc adm policy add-cluster-role-to-user cluster-admin user2
 ----
++
 You should see
-
++
 .Output
 [source,text]
 ----
 cluster role "cluster-admin" added: "user2"
 ----
+
 
 == Create applications in the OpenShift Cluster
 
@@ -227,7 +235,7 @@ In case Kibana doesn't display any index it is possible that no logs were produc
 [NOTE]
 The field names are listed on the left-hand menu. When you hover over a specific field you'll get an option to `add` it as a column.
 +
-. Verify that logs from the application deployed as `user1` can be seen and no logs from namespace created as `user2` can be seen
+. Verify that logs from the application deployed as `user1` can be seen.
 
 Validated at this point:
 Regular user can only see logs from his/her own application.
