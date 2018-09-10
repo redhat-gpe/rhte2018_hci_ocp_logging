@@ -771,6 +771,18 @@ In this section you will learn how to search for Kubernetes events in Kibana.
 [NOTE]
 You can switch to a different index by selecting it in left upper corner
 +
+. In the `Search` bar type the following in order to filter only the messages that contain field `kuberenetes.event`
++
+[NOTE]
+What happens here is the Kubernetes events get collected in the namespace `default`, which means they'll end up in the index pattern `.operations.*` and all Kubernetes events have field `kubernetes.event` which contains the actual structure of the event.
++
+[NOTE]
+Elasticsearch query keyword `_exists_` can be used to find only the records where certain field exists.
++
+[source, text]
+----
+_exists_:kubernetes.event
+----
 . Remove all existing columns and add columns for:
 .. `kubernetes.event.type`
 +
@@ -795,18 +807,6 @@ This field shows the brief machine-readable reason for the event
 [NOTE]
 This field shows the human-readable event message
 +
-. In the `Search` bar type the following in order to filter only the messages that contain field `kuberenetes.event`
-+
-[NOTE]
-What happens here is the Kubernetes events get collected in the namespace `default`, which means they'll end up in the index pattern `.operations.*` and all Kubernetes events have field `kubernetes.event` which contains the actual structure of the event.
-+
-[NOTE]
-Elasticsearch query keyword `_exists_` can be used to find only the records where certain field exists.
-+
-[source, text]
-----
-_exists_:kubernetes.event
-----
 . Click `Save`
 .. Enter name `Kubernetes Events`
 .. Check checkbox 'Save as a new search'
