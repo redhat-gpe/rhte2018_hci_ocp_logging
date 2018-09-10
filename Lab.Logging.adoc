@@ -100,7 +100,7 @@ The cluster URL is https://{cluster_master}.
 We recommend that you use "incognito" or "private browsing" mode of your browser, since we will use several users and we don't want to mix up the cookies.
 
 . Use your web browser to log in to the cluster https://{cluster_master}.
-. At the login prompt use username `user1` and password `r3dh4t1!`
+. At the login prompt use username `user2` and password `r3dh4t1!`
 
 === Connect to the bastion host via ssh
 
