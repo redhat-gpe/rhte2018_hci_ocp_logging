@@ -73,7 +73,7 @@ The cluster URL is https://{cluster_master}.
 +
 [source,text]
 ----
-oc login -u lab-user -p r3dh4t1! <CLUSTER_URL>
+oc login -u user1 -p r3dh4t1! <CLUSTER_URL>
 ----
 +
 [NOTE]
@@ -865,11 +865,11 @@ kubernetes.event.involvedObject.namespace:lab1 OR kubernetes.namespace_name:lab1
 ----
 +
 . Delete ImageStream `logging-app` in the namespace `lab1`
-.. Log in via `oc` as a lab-user:
+.. Log in via `oc` as a user1:
 +
 [source,text]
 ----
-oc login -u lab-user -p r3dh4t1! <CLUSTER_URL>
+oc login -u user1 -p r3dh4t1! <CLUSTER_URL>
 ----
 +
 [NOTE]
