@@ -346,7 +346,7 @@ Logging Install  : Complete (0:02:58)
 
 Validate that the logging stack was updated:
 
-. Navigate to `openshift-logging` namespace and check the running pods
+. On the bastion host, navigate to `openshift-logging` namespace and check the running pods
 [source,bash]
 ----
 oc project openshift-logging
@@ -556,7 +556,7 @@ If you don't select `Save as a new search` checkbox, you will overwrite the prev
 .. Click `Save`
 
 === Create Visualizations
-Fist visualization we're going to create is the pie chart visualization of Namespace by volume of logs.
+Fist visualization we're going to create is the pie chart visualization of Namespaces by volume of logs.
 
 . Click Visualize tab
 .. Click `+`
@@ -606,8 +606,8 @@ We're re-using `ops logs` saved search which we created on an earlier step.
 Next visualization we will append the `namespaces by log volume` Pie chart to include pod names.
 
 . Click Visualize tab
-. Click `namespace by log volume` visualization to open it for editing
-. Under `buckets` click `Add sub-bucket`
+. Click `namespaces by log volume` visualization to open it for editing
+. Under `buckets` click `Add sub-buckets`
 . In `Select bucket type` choose `Split Slices`
 . In `Sub Aggregation` drop-down select `Terms`
 . In `Field` choose `kubenetes.pod_name`
@@ -773,6 +773,9 @@ You can switch to a different index by selecting it in left upper corner
 +
 . Remove all existing columns and add columns for:
 .. `kubernetes.event.type`
++
+[NOTE]
+If you don't see the appropriate field name in the left-hand column, please click search/refresh. This will repopulate the fields in the left-hand column.
 +
 [NOTE]
 This field shows the type of the event: either `Normal` or `Warning`
