@@ -614,7 +614,7 @@ Next visualization we will append the `namespaces by log volume` Pie chart to in
 . hit 'run' button to preview the visualization
 . Check that visualization displays logs volume by pod name and by namespace
 . Click `Save`
-. Use the same name (`namespaces by log volume`)
+. Use the same name `namespaces by log volume`
 . Click `Save`
 
 
